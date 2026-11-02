@@ -1,0 +1,79 @@
+<!doctype html>
+        <label class="check"><input type="checkbox"> Habe ich Verben und Adjektive passend verwendet?</label>
+        <label class="check"><input type="checkbox"> Habe ich nach Begleitern wie „der“, „die“, „ein“ auf Nomen geachtet?</label>
+        <label for="wordtypes">Hier bin ich unsicher bei Wortarten oder Gross-/Kleinschreibung:</label>
+        <textarea id="wordtypes" placeholder="z. B. Wir gingen schnell / das schnelle Pferd"></textarea>
+      </div>
+      <div>
+        <h3>Kommasetzung</h3>
+        <label class="check"><input type="checkbox"> Habe ich Aufzählungen geprüft?</label>
+        <label class="check"><input type="checkbox"> Habe ich bei längeren Sätzen die Satzteile gesucht?</label>
+        <label class="check"><input type="checkbox"> Habe ich geprüft, ob ein Komma einen Nebensatz abtrennt?</label>
+        <label for="commas">Diese Kommas muss ich noch prüfen:</label>
+        <textarea id="commas" placeholder="Schreibe den ganzen Satz mit der unsicheren Stelle auf."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>3. Meine Auswertung</h2>
+    <p>Wähle höchstens <strong>zwei</strong> Bereiche, an denen du beim nächsten Text arbeiten möchtest.</p>
+    <div class="grid">
+      <label class="check"><input class="focus" type="checkbox" value="Rechtschreibung"> Rechtschreibung</label>
+      <label class="check"><input class="focus" type="checkbox" value="Satzbau und Grammatik"> Satzbau und Grammatik</label>
+      <label class="check"><input class="focus" type="checkbox" value="Wortarten und Gross-/Kleinschreibung"> Wortarten und Gross-/Kleinschreibung</label>
+      <label class="check"><input class="focus" type="checkbox" value="Kommasetzung"> Kommasetzung</label>
+    </div>
+    <label for="good">Das kann ich bereits gut:</label>
+    <textarea id="good" placeholder="z. B. Ich bilde verständliche Sätze und setze Punkte meistens richtig."></textarea>
+    <label for="difficulty">Das fällt mir noch schwer:</label>
+    <textarea id="difficulty" placeholder="Beschreibe möglichst genau, was noch schwierig ist."></textarea>
+  </section>
+
+  <section class="card goal">
+    <h2>4. Mein Ziel für den nächsten Text</h2>
+    <p>Ein gutes Ziel ist <strong>konkret</strong> und <strong>überprüfbar</strong>. Ergänze den Satz:</p>
+    <label for="goal">In meinem nächsten Text achte ich besonders auf ...</label>
+    <textarea id="goal" placeholder="z. B. ... die Kommas bei Nebensätzen. Ich unterstreiche jeden Nebensatz und prüfe das Komma danach."></textarea>
+    <label for="strategy">So gehe ich dabei vor:</label>
+    <textarea id="strategy" placeholder="z. B. Ich lese den Text am Schluss langsam Satz für Satz und markiere alle Verben."></textarea>
+    <label for="proof">Daran erkenne ich, dass ich mein Ziel erreicht habe:</label>
+    <textarea id="proof" placeholder="z. B. Ich kann drei schwierige Stellen erklären und habe alle Sätze kontrolliert."></textarea>
+  </section>
+
+  <section class="card">
+    <h2>Mein persönlicher Check vor der Abgabe</h2>
+    <label class="check"><input type="checkbox"> Ich habe meinen Text laut gelesen.</label>
+    <label class="check"><input type="checkbox"> Ich habe mindestens einen Satz auf Grammatik geprüft.</label>
+    <label class="check"><input type="checkbox"> Ich habe Nomen und Gross-/Kleinschreibung geprüft.</label>
+    <label class="check"><input type="checkbox"> Ich habe die Kommasetzung geprüft.</label>
+    <label class="check"><input type="checkbox"> Ich habe mein Ziel für den nächsten Text aufgeschrieben.</label>
+    <div class="buttons no-print">
+      <button onclick="showResult()">Meine Auswertung anzeigen</button>
+      <button class="secondary" onclick="window.print()">Auswertung drucken / als PDF speichern</button>
+      <button class="light" onclick="saveData()">Zwischenspeichern</button>
+      <button class="light" onclick="clearData()">Neu beginnen</button>
+    </div>
+    <div id="result" class="result"></div>
+  </section>
+</main>
+<script>
+const text=document.getElementById('text');
+text.addEventListener('input',()=>document.getElementById('words').textContent=(text.value.trim().match(/\S+/g)||[]).length);
+function showResult(){
+ const focus=[...document.querySelectorAll('.focus:checked')].map(x=>x.value);
+ const good=document.getElementById('good').value.trim(); const goal=document.getElementById('goal').value.trim();
+ let msg='<strong>Deine Auswertung</strong><br>';
+ msg+=focus.length?'Deine Schwerpunkte: <span class="tag">'+focus.join('</span> und <span class="tag">')+'</span>.<br>':'Wähle noch mindestens einen Schwerpunkt aus.<br>';
+ msg+=good?'Das kannst du bereits gut: '+good+'<br>':'Ergänze noch, was du bereits gut kannst.<br>';
+ msg+=goal?'Dein Ziel steht fest. Lies es vor dem nächsten Schreiben noch einmal durch.':'Formuliere noch dein Ziel für den nächsten Text.';
+ const r=document.getElementById('result'); r.innerHTML=msg; r.style.display='block'; r.scrollIntoView({behavior:'smooth'});
+}
+function saveData(){
+ const data={}; document.querySelectorAll('textarea').forEach(x=>data[x.id]=x.value); document.querySelectorAll('input[type=checkbox]').forEach((x,i)=>data['c'+i]=x.checked); localStorage.setItem('schreibjournalCheck',JSON.stringify(data)); alert('Deine Eingaben wurden auf diesem Gerät gespeichert.');
+}
+function clearData(){if(confirm('Wirklich alle Eingaben löschen?')){localStorage.removeItem('schreibjournalCheck');location.reload();}}
+window.addEventListener('load',()=>{try{const d=JSON.parse(localStorage.getItem('schreibjournalCheck'));if(!d)return;document.querySelectorAll('textarea').forEach(x=>{if(d[x.id]!==undefined)x.value=d[x.id]});document.querySelectorAll('input[type=checkbox]').forEach((x,i)=>{if(d['c'+i]!==undefined)x.checked=d['c'+i]});text.dispatchEvent(new Event('input'));}catch(e){}});
+</script>
+</body>
+</html>
